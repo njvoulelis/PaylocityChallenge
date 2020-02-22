@@ -1,0 +1,29 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+
+<div class="text-center">
+    <h1>Employee List</h1>
+    <table>
+        <tr>
+            <th>Employee Name</th>
+            <th>Number of Dependents</th>
+            <th>Salary</th>
+            <th>Total Healthcare Cost Per Year</th>
+        </tr>
+        @foreach(Employee e in Model)
+        {
+            <tr>
+                <td> <a asp-action="EmployeeDetail" asp-route-id="@e.EmpId">@e.FirstName</a></td>
+                <td>@e.RelatedDependents.Count</td>
+                <td>@e.Salary</td>
+                <td>$1,500</td>
+            </tr>
+        }
+    </table>
+    <a asp-action="AddEmployeeForm">Add a new employee!</a>
+
+    
+</div>

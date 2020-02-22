@@ -18,8 +18,6 @@ namespace PaylocityChallenge.Models
         [MinLength(1, ErrorMessage="Last name must be more than 1 character.")]
         public string LastName {get;set;}
 
-
-
         public DateTime CreatedAt {get;set;} = DateTime.Now;
         public DateTime UpdatedAt {get;set;} = DateTime.Now;
 

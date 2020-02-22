@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using PaylocityChallenge.Models;
@@ -17,9 +18,19 @@ namespace PaylocityChallenge.Controllers
             dbContext = context;
         }
 
-        public IActionResult Index()
+        [HttpGet("/")]
+        public IActionResult EmployeeTable()
         {
-            return View();
+            List<Employee> AllEmployees = dbContext.Employees
+            .Include(e=>e.RelatedDependents)
+            .OrderByDescending(e=>e.FirstName)
+            .ToList();
+            // EmployeeTableViewModel employeeTableViewModel = new EmployeeTableViewModel()
+            // {
+            //     ViewEmployeeList = AllEmployees,
+            //     Healthcare
+            // };
+            return View(AllEmployees);
         }
 
         [HttpGet("add-employee")]
@@ -29,7 +40,7 @@ namespace PaylocityChallenge.Controllers
         }
 
 
-        [HttpPost("add-employee-post")]
+        [HttpPost("add-employee")]
         public IActionResult AddEmployeePost(Employee NewEmployee)
         {
             dbContext.Employees.Add(NewEmployee);
@@ -37,20 +48,36 @@ namespace PaylocityChallenge.Controllers
             return Redirect("/");
         }
 
+        [HttpGet("/{id}")]
+        public IActionResult EmployeeDetail(int id)
+        {
+            Employee RetEmployee = dbContext.Employees
+            .Include(e => e.RelatedDependents)
+            .FirstOrDefault(e => e.EmpId == id);
+            return View(RetEmployee);
+        }
+
         [HttpGet("/{id}/add-dependent")]
         public IActionResult AddDependentForm(int id)
         {
             Employee RetEmployee = dbContext.Employees
-            // .Where(e => e.EmpId == id)
             .FirstOrDefault(e => e.EmpId == id);
 
-            EmployeeDependentViewModel EDViewModel = new EmployeeDependentViewModel()
+            EmployeeDependentViewModel employeeDependentViewModel = new EmployeeDependentViewModel()
             {
                 ViewEmployee = RetEmployee
             };
-            return View(EDViewModel);
+            return View(employeeDependentViewModel);
         }
 
+        [HttpPost("/{id}/add-dependent")]
+        public IActionResult AddDependentPost(EmployeeDependentViewModel employeeDependentViewModel, int id)
+        {
+            employeeDependentViewModel.ViewDependent.EmpId = id;
+            dbContext.Dependents.Add(employeeDependentViewModel.ViewDependent);
+            dbContext.SaveChanges();
+            return Redirect($"/{id}");
+        }
 
         public IActionResult Privacy()
         {
