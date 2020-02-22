@@ -11,8 +11,14 @@ namespace PaylocityChallenge.Models
         public int DepId {get;set;}
 
         [Required]
-        [MinLength(1, ErrorMessage="Name must be more than 1 character.")]
-        public string Name {get;set;}
+        [MinLength(1, ErrorMessage="First name must be more than 1 character.")]
+        public string FirstName {get;set;}
+        
+        [Required]
+        [MinLength(1, ErrorMessage="Last name must be more than 1 character.")]
+        public string LastName {get;set;}
+
+
 
         public DateTime CreatedAt {get;set;} = DateTime.Now;
         public DateTime UpdatedAt {get;set;} = DateTime.Now;

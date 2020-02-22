@@ -22,6 +22,36 @@ namespace PaylocityChallenge.Controllers
             return View();
         }
 
+        [HttpGet("add-employee")]
+        public IActionResult AddEmployeeForm()
+        {
+            return View();
+        }
+
+
+        [HttpPost("add-employee-post")]
+        public IActionResult AddEmployeePost(Employee NewEmployee)
+        {
+            dbContext.Employees.Add(NewEmployee);
+            dbContext.SaveChanges();
+            return Redirect("/");
+        }
+
+        [HttpGet("/{id}/add-dependent")]
+        public IActionResult AddDependentForm(int id)
+        {
+            Employee RetEmployee = dbContext.Employees
+            // .Where(e => e.EmpId == id)
+            .FirstOrDefault(e => e.EmpId == id);
+
+            EmployeeDependentViewModel EDViewModel = new EmployeeDependentViewModel()
+            {
+                ViewEmployee = RetEmployee
+            };
+            return View(EDViewModel);
+        }
+
+
         public IActionResult Privacy()
         {
             return View();
