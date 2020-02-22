@@ -15,11 +15,32 @@
         </tr>
         @foreach(Employee e in Model)
         {
+            int TotalCostPerYear = 0;
+            if(e.FirstName[0] == 'A')
+            {
+                TotalCostPerYear += 900;
+            }
+            else
+            {
+                TotalCostPerYear += 1000;
+            }
+
+                @foreach (Dependent d in e.RelatedDependents)
+                {
+                    @if(d.FirstName[0] == 'A')
+                    {
+                        TotalCostPerYear += 450;
+                    }
+                    else
+                    {
+                        TotalCostPerYear += 500;
+                    }
+                }
             <tr>
-                <td> <a asp-action="EmployeeDetail" asp-route-id="@e.EmpId">@e.FirstName</a></td>
+                <td> <a asp-action="EmployeeDetail" asp-route-id="@e.EmpId">@e.FirstName @e.LastName</a></td>
                 <td>@e.RelatedDependents.Count</td>
-                <td>@e.Salary</td>
-                <td>$1,500</td>
+                <td>$@e.Salary</td>
+                <td>$@(TotalCostPerYear)</td>
             </tr>
         }
     </table>
