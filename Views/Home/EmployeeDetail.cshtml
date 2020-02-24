@@ -1,57 +1,31 @@
 <h1>Employee: @Model.FirstName @Model.LastName</h1>
-<h2>Employee Salary: $@Model.Salary.00</h2>
+<h2>Employee Salary: @Model.Salary.ToString("C")</h2>
 <table>
     <tr>
         <th>Healthcare Recipient</th>
         <th>Healthcare Cost Per Year</th>
         <th>Healthcare Cost Per Paycheck</th>
+        <th>Delete Dependent</th>
     </tr>
-    @{
-        double TotalCostPerYear = 0;
-        double TotalCostPerPaycheck = 0;
-        double EmployeeCostPerYear = 1000;
-        double DependentCostPerYear = 500;
-    }
     <tr>
         <td>Employee: @Model.FirstName @Model.LastName</td>
-        @if (@Model.FirstName[0]=='A')
-        {
-            @(TotalCostPerYear += (EmployeeCostPerYear * .9))
-            @(TotalCostPerPaycheck += (EmployeeCostPerYear * .9 / 26))
-            <td>$@(Math.Round((EmployeeCostPerYear * .9), 2))</td>
-            <td>$@(Math.Round((EmployeeCostPerYear *  .9 / 26), 2))</td>
-        }
-        else
-        {
-            @(TotalCostPerYear += 1000)
-            @(TotalCostPerPaycheck += (EmployeeCostPerYear / 26))
-            <td>$1000</td>
-            <td>$@(Math.Round((EmployeeCostPerYear / 26), 2))</td>
-        }
+        <td>@Model.EmployeeCostPerYear.ToString("C")</td>
+        <td>@Model.EmployeeCostPerPaycheck.ToString("C")</td>
+        <td></td>
     </tr>
     @foreach(Dependent d in Model.RelatedDependents)
     {
         <tr>
             <td>Dependent: @d.FirstName @d.LastName</td>
-            @if(d.FirstName[0] == 'A')
-            {
-                @(TotalCostPerYear += (DependentCostPerYear * .9))
-                @(TotalCostPerPaycheck += (DependentCostPerYear * .9 / 26))
-                <td>$@(Math.Round((DependentCostPerYear * .9), 2))</td>
-                <td>$@(Math.Round((DependentCostPerYear * .9 / 26), 2))</td>
-            }
-            else
-            {
-                @(TotalCostPerYear += DependentCostPerYear)
-                @(TotalCostPerPaycheck += (DependentCostPerYear / 26))
-                <td>$500</td>
-                <td>$@(Math.Round((DependentCostPerYear / 26), 2))</td>
-            }
+            <td>@d.CostPerYear.ToString("C")</td>
+            <td>@d.CostPerPaycheck.ToString("C")</td>
+            <td><a asp-action="DeleteDependent" asp-route-id="@d.DepId">Delete</a></td>
         </tr>
     }
 </table>
-<h3>Yearly Total Healthcare Cost: $@(TotalCostPerYear).00</h3>
-<h3>Healthcare Cost Per Paycheck: $@(Math.Round(TotalCostPerPaycheck, 2))</h3>
-<h3>Net Pay for @Model.FirstName @Model.LastName: $@(52000 - TotalCostPerYear).00 </h3>
+<h3>Yearly Total Healthcare Cost: @Model.TotalCostPerYear.ToString("C")</h3>
+<h3>Healthcare Cost Per Paycheck: @Model.TotalCostPerPaycheck.ToString("C")</h3>
+<!-- <h3>Net Pay for @Model.FirstName @Model.LastName: @(Model.Salary - Model.TotalCostPerYear).ToString("C") </h3> -->
+<h3>Net Pay for @Model.FirstName @Model.LastName: $@(Model.Salary - Model.TotalCostPerYear).00 </h3>
 
 <a asp-action="AddDependentForm" asp-route-id="@Model.EmpId">Add a dependent</a>

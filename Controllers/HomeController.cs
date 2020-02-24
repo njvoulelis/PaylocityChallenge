@@ -22,14 +22,9 @@ namespace PaylocityChallenge.Controllers
         public IActionResult EmployeeTable()
         {
             List<Employee> AllEmployees = dbContext.Employees
-            .Include(e=>e.RelatedDependents)
-            .OrderByDescending(e=>e.FirstName)
+            .Include(e => e.RelatedDependents)
+            .OrderBy(e => e.FirstName)
             .ToList();
-            // EmployeeTableViewModel employeeTableViewModel = new EmployeeTableViewModel()
-            // {
-            //     ViewEmployeeList = AllEmployees,
-            //     Healthcare
-            // };
             return View(AllEmployees);
         }
 
@@ -43,9 +38,24 @@ namespace PaylocityChallenge.Controllers
         [HttpPost("add-employee")]
         public IActionResult AddEmployeePost(Employee NewEmployee)
         {
-            dbContext.Employees.Add(NewEmployee);
+
+            if (ModelState.IsValid)
+            {
+                dbContext.Employees.Add(NewEmployee);
+                dbContext.SaveChanges();
+                return Redirect("/");
+            }
+            return View("AddEmployeeForm");
+        }
+
+        [HttpGet("/{id}/deleteemployee")]
+        public IActionResult DeleteEmployee(int id)
+        {
+            Employee EmployeeToDelete = dbContext.Employees.FirstOrDefault(e => e.EmpId == id);
+            dbContext.Employees.Remove(EmployeeToDelete);
             dbContext.SaveChanges();
-            return Redirect("/");
+            return RedirectToAction("EmployeeTable");
+
         }
 
         [HttpGet("/{id}")]
@@ -54,6 +64,15 @@ namespace PaylocityChallenge.Controllers
             Employee RetEmployee = dbContext.Employees
             .Include(e => e.RelatedDependents)
             .FirstOrDefault(e => e.EmpId == id);
+
+            RetEmployee.CalculateEmployeeHealthcare();
+
+            foreach (Dependent d in RetEmployee.RelatedDependents)
+            {
+                RetEmployee.TotalCostPerYear += d.DependentHealthcarePerYear();
+                RetEmployee.TotalCostPerPaycheck += d.DependentHealthcarePerPaycheck();
+            }
+
             return View(RetEmployee);
         }
 
@@ -73,15 +92,32 @@ namespace PaylocityChallenge.Controllers
         [HttpPost("/{id}/add-dependent")]
         public IActionResult AddDependentPost(EmployeeDependentViewModel employeeDependentViewModel, int id)
         {
-            employeeDependentViewModel.ViewDependent.EmpId = id;
-            dbContext.Dependents.Add(employeeDependentViewModel.ViewDependent);
-            dbContext.SaveChanges();
-            return Redirect($"/{id}");
+            if (ModelState.IsValid)
+            {
+                employeeDependentViewModel.ViewDependent.EmpId = id;
+                dbContext.Dependents.Add(employeeDependentViewModel.ViewDependent);
+                dbContext.SaveChanges();
+                return Redirect($"/{id}");
+            }
+            Employee RetEmployee = dbContext.Employees
+            .FirstOrDefault(e => e.EmpId == id);
+
+            EmployeeDependentViewModel employeeDependentViewModelForValidation = new EmployeeDependentViewModel()
+            {
+                ViewEmployee = RetEmployee
+            };
+            
+            return View("AddDependentForm", employeeDependentViewModelForValidation);
         }
 
-        public IActionResult Privacy()
+        [HttpGet("/{id}/deletedependent/")]
+        public IActionResult DeleteDependent(int id)
         {
-            return View();
+            Dependent DependentToDelete = dbContext.Dependents.FirstOrDefault(d => d.DepId == id);
+            int empId = DependentToDelete.EmpId;
+            dbContext.Dependents.Remove(DependentToDelete);
+            dbContext.SaveChanges();
+            return Redirect($"/{DependentToDelete.EmpId}");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

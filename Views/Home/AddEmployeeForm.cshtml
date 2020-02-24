@@ -1,15 +1,18 @@
 @model Employee
 
-<h1>add employee</h1>
+<h1>Add Employee:</h1>
 
 <form asp-action="AddEmployeePost">
     <div class="form-group">
-        <label asp-for="FirstName">First Name: </label>
+        <label asp-for="FirstName">First name: </label>
         <input asp-for="FirstName">
     </div>
     <div class="form-group">
-        <label asp-for="LastName">Last Name: </label>
+        <label asp-for="LastName">Last name: </label>
         <input asp-for="LastName">
     </div>
     <input type="submit">
 </form>
+
+<span asp-validation-for="FirstName"></span>
+<span asp-validation-for="LastName"></span>
