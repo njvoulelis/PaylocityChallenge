@@ -8,18 +8,25 @@
         <tr>
             <th>Employee Name</th>
             <th>Number of Dependents</th>
-            <th>Delete</th>
+            <th>Yearly Total Healthcare Cost</th>
+            <th>Action</th>
         </tr>
-        @foreach(Employee e in Model)
+        @foreach(Employee e in Model.ViewEmployeeList)
         {
             <tr>
                 <td> <a asp-action="EmployeeDetail" asp-route-id="@e.EmpId">@e.FirstName @e.LastName</a></td>
                 <td>@e.RelatedDependents.Count</td>
+                <td>@e.TotalCostPerYear.ToString("C")</td>
                 <td> <a asp-action="DeleteEmployee" asp-route-id="@e.EmpId">Delete Employee</a></td>
             </tr>
         }
+        <tr>
+            <td><a asp-action="AddEmployeeForm" >Add a new employee</a></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
     </table>
-    <a asp-action="AddEmployeeForm" >Add a new employee</a>
-
-    
 </div>
+<h3>Employee Overhead (All salaries totaled): @Model.ViewTotaledSalaries.ToString("C")</h3>
+<h3>Total Withheld By Company For All Employees: @Model.ViewTotalWithholdingByEmployer.ToString("C")</h3>

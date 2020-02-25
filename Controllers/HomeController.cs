@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using PaylocityChallenge.Models;
 
@@ -25,7 +23,32 @@ namespace PaylocityChallenge.Controllers
             .Include(e => e.RelatedDependents)
             .OrderBy(e => e.FirstName)
             .ToList();
-            return View(AllEmployees);
+
+            double viewTotaledSalaries = 0;
+            double viewTotalWithholdingByEmployer = 0;
+
+            foreach (Employee e in AllEmployees)
+            {
+                e.CalculateEmployeeHealthcare();
+                viewTotaledSalaries += e.Salary;
+                viewTotalWithholdingByEmployer += e.TotalCostPerYear;
+
+                foreach (Dependent d in  e.RelatedDependents)
+                {
+                    double dependentHealthcarePerYear = d.DependentHealthcarePerYear();
+                    e.TotalCostPerYear += dependentHealthcarePerYear;
+                    viewTotalWithholdingByEmployer += dependentHealthcarePerYear;
+                }
+            }
+
+            EmployeeTableViewModel employeeTableViewModel = new EmployeeTableViewModel()
+            {
+                ViewEmployeeList = AllEmployees,
+                ViewTotaledSalaries = viewTotaledSalaries,
+                ViewTotalWithholdingByEmployer = viewTotalWithholdingByEmployer
+            };
+
+            return View(employeeTableViewModel);
         }
 
         [HttpGet("add-employee")]
@@ -55,7 +78,6 @@ namespace PaylocityChallenge.Controllers
             dbContext.Employees.Remove(EmployeeToDelete);
             dbContext.SaveChanges();
             return RedirectToAction("EmployeeTable");
-
         }
 
         [HttpGet("/{id}")]

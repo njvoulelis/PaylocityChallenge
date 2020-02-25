@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Collections.Generic;
 using System;
 
 namespace PaylocityChallenge.Models
@@ -11,12 +10,12 @@ namespace PaylocityChallenge.Models
         public int DepId { get; set; }
 
         [Required]
-        [RegularExpression(@"^[^±!@£$%^&*_+§¡€#¢§¶•ªº«\\/<>()[]{}?:;|=.,]{1,20}$", ErrorMessage = "Please only use characters for First name")]
+        [RegularExpression(@"^[^±!@£$%^&*_+§¡€#¢§¶•ªº«\\/<>?:;|=.,]{1,20}$", ErrorMessage = "Please only use characters for First name")]
         [MinLength(1, ErrorMessage = "First name must be more than 1 character")]
         public string FirstName { get; set; }
 
         [Required]
-        [RegularExpression(@"^[^±!@£$%^&*_+§¡€#¢§¶•ªº«\\/<>()[]{}?:;|=.,]{1,20}$", ErrorMessage = "Please only use characters for Last name")]
+        [RegularExpression(@"^[^±!@£$%^&*_+§¡€#¢§¶•ªº«\\/<>?:;|=.,]{1,20}$", ErrorMessage = "Please only use characters for Last name")]
         [MinLength(1, ErrorMessage = "Last name must be more than 1 character")]
         public string LastName { get; set; }
 

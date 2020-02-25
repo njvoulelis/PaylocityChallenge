@@ -5,27 +5,32 @@
         <th>Healthcare Recipient</th>
         <th>Healthcare Cost Per Year</th>
         <th>Healthcare Cost Per Paycheck</th>
-        <th>Delete Dependent</th>
+        <th>Action</th>
     </tr>
     <tr>
         <td>Employee: @Model.FirstName @Model.LastName</td>
         <td>@Model.EmployeeCostPerYear.ToString("C")</td>
         <td>@Model.EmployeeCostPerPaycheck.ToString("C")</td>
-        <td></td>
+        <td> <a asp-action="DeleteEmployee" asp-route-id="@Model.EmpId">Delete Employee Record</a></td>
     </tr>
     @foreach(Dependent d in Model.RelatedDependents)
     {
-        <tr>
-            <td>Dependent: @d.FirstName @d.LastName</td>
-            <td>@d.CostPerYear.ToString("C")</td>
-            <td>@d.CostPerPaycheck.ToString("C")</td>
-            <td><a asp-action="DeleteDependent" asp-route-id="@d.DepId">Delete</a></td>
-        </tr>
+    <tr>
+        <td>Dependent: @d.FirstName @d.LastName</td>
+        <td>@d.CostPerYear.ToString("C")</td>
+        <td>@d.CostPerPaycheck.ToString("C")</td>
+        <td><a asp-action="DeleteDependent" asp-route-id="@d.DepId">Delete Dependent</a></td>
+    </tr>
     }
+    <tr>
+        <td>
+            <a asp-action="AddDependentForm" asp-route-id="@Model.EmpId">Add a new dependent</a>
+        </td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
 </table>
 <h3>Yearly Total Healthcare Cost: @Model.TotalCostPerYear.ToString("C")</h3>
 <h3>Healthcare Cost Per Paycheck: @Model.TotalCostPerPaycheck.ToString("C")</h3>
-<!-- <h3>Net Pay for @Model.FirstName @Model.LastName: @(Model.Salary - Model.TotalCostPerYear).ToString("C") </h3> -->
-<h3>Net Pay for @Model.FirstName @Model.LastName: $@(Model.Salary - Model.TotalCostPerYear).00 </h3>
-
-<a asp-action="AddDependentForm" asp-route-id="@Model.EmpId">Add a dependent</a>
+<h3>Net Pay for @Model.FirstName @Model.LastName: @((Model.Salary - Model.TotalCostPerYear).ToString("C")) </h3>
